@@ -19,6 +19,8 @@ def index(subpath):
             return "Data could not be fetched.", 500
         
         parsed_data = json.loads(raw_data.text)
+        if parsed_data == []:
+            return "No results.", 400
 
         if not parsed_data:
             return "Invalid station UUID.", 400
@@ -48,6 +50,8 @@ def local():
         city = ip_parsed.get("city")
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}")
         parsed_data = json.loads(raw_data.text)
+        if parsed_data == []:
+            return "No results.", 400
 
         stations = parsed_data
         data = []
@@ -66,6 +70,8 @@ def explore():
     try:
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100")
         parsed_data = json.loads(raw_data.text)
+        if parsed_data == []:
+            return "No results.", 400
 
         stations = parsed_data
         data = []
@@ -82,10 +88,12 @@ def explore():
 @app.route('/search/<path:subpath>/')
 def search(subpath):
     try:
-        if not subpath.isalnum:
+        if not subpath.isalnum():
             return "Input must be alphanumerical.", 400
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}")
         parsed_data = json.loads(raw_data.text)
+        if parsed_data == []:
+            return "No results.", 400
 
         stations = parsed_data
         data = []
