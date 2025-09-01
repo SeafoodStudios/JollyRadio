@@ -51,7 +51,11 @@ def browse():
 
         stations = parsed_data
         data = []
+        index = 0
         for station in stations:
+            if index > 99:
+                break
+            index += 1
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('browse.html', data=data)
