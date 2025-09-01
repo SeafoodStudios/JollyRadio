@@ -28,7 +28,7 @@ def index(subpath):
         if not station.get("codec") == "MP3":
             return "Unsupported music type."
         
-        return render_template('radio.html', link=station.get("url"))
+        return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"))
     except:
         return "Generic error.", 500
 
