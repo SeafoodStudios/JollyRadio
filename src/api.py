@@ -79,3 +79,23 @@ def explore():
         return render_template('explore.html', data=data)
     except:
         return "Generic error.", 500
+@app.route('/search/<path:subpath>/')
+def search(subpath):
+    try:
+        if not subpath.isalnum:
+            return "Input must be alphanumerical.", 400
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}")
+        parsed_data = json.loads(raw_data.text)
+
+        stations = parsed_data
+        data = []
+        index = 0
+        for station in stations:
+            if index > 99:
+                break
+            index += 1
+            if station.get("codec", "Unknown") == "MP3":
+                data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
+        return render_template('name.html', data=data)
+    except:
+        return "Generic error.", 500
