@@ -45,6 +45,3 @@ def browse():
         return str(data), 200
     except:
         return "Generic error.", 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
