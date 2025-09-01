@@ -2,6 +2,9 @@ from flask import Flask, render_template, request
 import uuid
 import json
 import requests
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -13,7 +16,7 @@ def index(subpath):
         except ValueError:
             return "Invalid station UUID.", 400
         
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byuuid/{subpath}")
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byuuid/{subpath}", timeout=5)
 
         if not raw_data.status_code == 200:
             return "Data could not be fetched.", 500
@@ -28,10 +31,11 @@ def index(subpath):
         station = parsed_data[0]
         
         if not station.get("codec") == "MP3":
-            return "Unsupported music type."
+            return "Unsupported music type.", 500
         
         return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"))
-    except:
+    except Exception as e:
+        logger.exception(e)
         return "Generic error.", 500
 
 @app.route('/local/')
@@ -43,12 +47,12 @@ def local():
         else:
             ip = request.remote_addr
             
-        ip_raw = requests.get(f"http://ip-api.com/json/{ip}")
+        ip_raw = requests.get(f"http://ip-api.com/json/{ip}", timeout=5)
         if not ip_raw.status_code == 200:
             return "Data could not be fetched.", 500
         ip_parsed = ip_raw.json()
         city = ip_parsed.get("city")
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}")
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}", timeout=5)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
@@ -63,12 +67,13 @@ def local():
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('local.html', data=data)
-    except:
+    except Exception as e:
+        logger.exception(e)
         return "Generic error.", 500
 @app.route('/explore/')
 def explore():
     try:
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100")
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100", timeout=5)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
@@ -83,14 +88,15 @@ def explore():
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('explore.html', data=data)
-    except:
+    except Exception as e:
+        logger.exception(e)
         return "Generic error.", 500
 @app.route('/search/<path:subpath>/')
 def search(subpath):
     try:
         if not subpath.isalnum():
             return "Input must be alphanumerical.", 400
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}")
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
@@ -105,5 +111,6 @@ def search(subpath):
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('name.html', data=data)
-    except:
+    except Exception as e:
+        logger.exception(e)
         return "Generic error.", 500
