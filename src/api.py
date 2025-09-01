@@ -46,7 +46,13 @@ def browse():
             return "Data could not be fetched.", 500
         ip_parsed = ip_raw.json()
         city = ip_parsed.get("city")
-        data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}")
-        return str(data.text), 200
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}")
+        parsed_data = json.loads(raw_data.text)
+
+        stations = parsed_data
+        data = []
+        for station in stations:
+            data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
+        return render_template('browse.html', data=data)
     except:
         return "Generic error.", 500
