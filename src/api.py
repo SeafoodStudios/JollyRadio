@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 @app.route('/station/<path:subpath>/')
-def index(subpath):
+def station(subpath):
     try:
         try:
             uuid_obj = uuid.UUID(str(subpath))
@@ -91,8 +91,9 @@ def explore():
     except Exception as e:
         logger.exception(e)
         return "Generic error.", 500
-@app.route('/search/<path:subpath>/')
-def search(subpath):
+@app.route('/search/')
+def search():
+    subpath = request.args.get('q', '')
     try:
         if not subpath.isalnum():
             return "Input must be alphanumerical.", 400
@@ -111,6 +112,13 @@ def search(subpath):
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('name.html', data=data)
+    except Exception as e:
+        logger.exception(e)
+        return "Generic error.", 500
+@app.route('/')
+def index():
+    try:
+        return render_template('index.html')
     except Exception as e:
         logger.exception(e)
         return "Generic error.", 500
