@@ -64,7 +64,7 @@ def local():
 @app.route('/explore/')
 def explore():
     try:
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=10")
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100")
         parsed_data = json.loads(raw_data.text)
 
         stations = parsed_data
