@@ -35,13 +35,18 @@ def index(subpath):
 @app.route('/browse/')
 def browse():
     try:
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        x_forwarded_for = request.headers.get('X-Forwarded-For', '')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0].strip()
+        else:
+            ip = request.remote_addr
+            
         ip_raw = requests.get(f"http://ip-api.com/json/{ip}")
         if not ip_raw.status_code == 200:
             return "Data could not be fetched.", 500
         ip_parsed = ip_raw.json()
         city = ip_parsed.get("city")
         data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}")
-        return str(data), 200
+        return str(data.text), 200
     except:
         return "Generic error.", 500
