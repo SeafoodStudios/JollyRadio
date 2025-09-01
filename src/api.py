@@ -5,7 +5,7 @@ import requests
 
 app = Flask(__name__)
 
-@app.route('/station/<path:subpath>')
+@app.route('/station/<path:subpath>/')
 def index(subpath):
     try:
         try:
@@ -32,8 +32,8 @@ def index(subpath):
     except:
         return "Generic error.", 500
 
-@app.route('/browse/')
-def browse():
+@app.route('/local/')
+def local():
     try:
         x_forwarded_for = request.headers.get('X-Forwarded-For', '')
         if x_forwarded_for:
@@ -58,6 +58,6 @@ def browse():
             index += 1
             if station.get("codec", "Unknown") == "MP3":
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
-        return render_template('browse.html', data=data)
+        return render_template('local.html', data=data)
     except:
         return "Generic error.", 500
