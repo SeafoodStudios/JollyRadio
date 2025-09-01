@@ -52,7 +52,8 @@ def browse():
         stations = parsed_data
         data = []
         for station in stations:
-            data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
+            if station.get("codec", "Unknown") == "MP3":
+                data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('browse.html', data=data)
     except:
         return "Generic error.", 500
