@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request
-import uuid
-import json
+from deep_translator import GoogleTranslator
+from better_profanity import profanity
 import requests
 import logging
+import uuid
+import json
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+profanity.load_censor_words()
 
 @app.route('/station/<path:subpath>/')
 def station(subpath):
@@ -29,7 +33,10 @@ def station(subpath):
             return "Invalid station UUID.", 400
 
         station = parsed_data[0]
-        
+
+        if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(station.get("name"))):
+            return "Unsupported station.", 400
+            
         if not station.get("codec") == "MP3":
             return "Unsupported music type.", 500
         
@@ -94,6 +101,8 @@ def explore():
 @app.route('/search/')
 def search():
     subpath = request.args.get('q', '')
+    if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(subpath)):
+        return "Nothing profane, please!", 400
     try:
         if not subpath.isalnum():
             return "Input must be alphanumerical.", 400
