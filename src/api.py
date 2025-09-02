@@ -50,6 +50,7 @@ def station(subpath):
             return "Unsupported music type.", 500
 
         data = []
+        index = 0
         for item in station:
             if index > 99:
                 break
