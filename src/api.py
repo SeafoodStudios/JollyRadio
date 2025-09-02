@@ -148,3 +148,6 @@ def index():
     except Exception as e:
         logger.exception(e)
         return "Generic error.", 500
+@app.route('/ping')
+def ping():
+    return "pong", 200
