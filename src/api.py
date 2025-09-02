@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request
+from flask_limiter.util import get_remote_address
+from flask_limiter import Limiter
 from deep_translator import GoogleTranslator
 from better_profanity import profanity
 import requests
@@ -6,10 +8,16 @@ import logging
 import uuid
 import json
 
+app = Flask(__name__)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["50 per 10 minutes"]
+)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
 profanity.load_censor_words()
 
 @app.route('/station/<path:subpath>/')
@@ -100,6 +108,8 @@ def explore():
         return "Generic error.", 500
 @app.route('/search/')
 def search():
+    if not subpath.isalnum():
+        return "Input must be alphanumerical.", 400
     subpath = request.args.get('q', '')
     if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(subpath)):
         return "Nothing profane, please!", 400
