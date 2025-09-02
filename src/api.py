@@ -7,7 +7,7 @@ import requests
 import logging
 import uuid
 import json
-import regex
+import re
 
 app = Flask(__name__)
 limiter = Limiter(
