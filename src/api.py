@@ -48,8 +48,15 @@ def station(subpath):
             
         if not station.get("codec") == "MP3":
             return "Unsupported music type.", 500
-        
-        return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"))
+
+        data = []
+        for item in station:
+            if index > 99:
+                break
+            index += 1
+            data.append(item, station[item])
+                
+        return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"), data=data)
     except Exception as e:
         logger.exception(e)
         return "Generic error.", 500
