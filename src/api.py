@@ -108,14 +108,12 @@ def explore():
         return "Generic error.", 500
 @app.route('/search/')
 def search():
-    if not subpath.isalnum():
-        return "Input must be alphanumerical.", 400
     subpath = request.args.get('q', '')
+    if not bool(re.fullmatch(r'[A-Za-z0-9 ]+', subpath)):
+        return "Input can only have alphanumerics with optional spaces.", 400
     if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(subpath)):
         return "Nothing profane, please!", 400
     try:
-        if not subpath.isalnum():
-            return "Input must be alphanumerical.", 400
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
