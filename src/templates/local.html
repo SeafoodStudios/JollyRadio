@@ -6,15 +6,19 @@
 </a>
 <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
     <h1>Local Stations</h1>
-    <table>
-      <tr>
-        <th>Station</th>
-        <th>Website</th>
-      </tr>
-      {% for station, website, uuid in data %}
+    <table class="table table-striped table-hover">
+      <thead>
         <tr>
-          <td><a href="https://jollyradio.onrender.com/station/{{ uuid }}">{{ station }}</a></td>
-          <td>{{ website }}</td>
+          <th>Station</th>
+          <th>Website</th>
         </tr>
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% for station, website, uuid in data %}
+          <tr>
+            <td><a href="https://jollyradio.onrender.com/station/{{ uuid }}">{{ station }}</a></td>
+            <td>{{ website }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
