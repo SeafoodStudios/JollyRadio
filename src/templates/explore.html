@@ -4,16 +4,17 @@
     <h1 style="margin-right: 10px; font-size: 24px; margin-bottom: 0;">JollyRadio</h1>
     <img src="https://raw.githubusercontent.com/SeafoodStudios/JollyRadio/main/resources/logo.png" alt="JollyRadio Logo" style="width: 50px; height: auto;">
 </a>
-<h1>Explore Stations</h1>
-<table>
-  <tr>
-    <th>Station</th>
-    <th>Website</th>
-  </tr>
-  {% for station, website, uuid in data %}
-    <tr>
-      <td><a href="https://jollyradio.onrender.com/station/{{ uuid }}">{{ station }}</a></td>
-      <td>{{ website }}</td>
-    </tr>
-  {% endfor %}
-</table>
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
+    <h1>Explore Stations</h1>
+    <table>
+      <tr>
+        <th>Station</th>
+        <th>Website</th>
+      </tr>
+      {% for station, website, uuid in data %}
+        <tr>
+          <td><a href="https://jollyradio.onrender.com/station/{{ uuid }}">{{ station }}</a></td>
+          <td>{{ website }}</td>
+        </tr>
+      {% endfor %}
+    </table>
