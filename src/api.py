@@ -55,7 +55,7 @@ def station(subpath):
             if index > 99:
                 break
             index += 1
-            data.append(item, station[item])
+            data.append((item, station[item]))
                 
         return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"), data=data)
     except Exception as e:
