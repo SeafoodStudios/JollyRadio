@@ -13,7 +13,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["50 per 10 minutes"]
+    default_limits=["100 per minute"]
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -150,4 +150,8 @@ def index():
         return "Generic error.", 500
 @app.route('/ping')
 def ping():
-    return "pong", 200
+    try:
+        return "pong", 200
+    except Exception as e:
+        logger.exception(e)
+        return "Generic error.", 500
