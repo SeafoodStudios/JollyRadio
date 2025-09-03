@@ -155,3 +155,10 @@ def ping():
     except Exception as e:
         logger.exception(e)
         return "Generic error.", 500
+@app.route('/terms')
+def terms():
+    try:
+        return render_template('tos.html')
+    except Exception as e:
+        logger.exception(e)
+        return "Generic error.", 500
