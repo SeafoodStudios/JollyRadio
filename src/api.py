@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 profanity.load_censor_words()
+headers = {'User-Agent': 'JollyRadio/1.0 (We are a radio website to make you more jolly!; contact: contact@seafoodstudios.com; +https://jollyradio.seafoodstudios.com)'}
 
 @app.route('/station/<path:subpath>/')
 def station(subpath):
@@ -29,7 +30,7 @@ def station(subpath):
         except ValueError:
             return "Invalid station UUID.", 400
         
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byuuid/{subpath}", timeout=5)
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byuuid/{subpath}", timeout=5, headers=headers)
 
         if not raw_data.status_code == 200:
             return "Data could not be fetched.", 500
@@ -71,12 +72,12 @@ def local():
         else:
             ip = request.remote_addr
             
-        ip_raw = requests.get(f"http://ip-api.com/json/{ip}", timeout=5)
+        ip_raw = requests.get(f"http://ip-api.com/json/{ip}", timeout=5, headers=headers)
         if not ip_raw.status_code == 200:
             return "Data could not be fetched.", 500
         ip_parsed = ip_raw.json()
         city = ip_parsed.get("city")
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}", timeout=5)
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
@@ -97,7 +98,7 @@ def local():
 @app.route('/explore/')
 def explore():
     try:
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100", timeout=5)
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
@@ -123,7 +124,7 @@ def search():
     if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(subpath)):
         return "Nothing profane, please!", 400
     try:
-        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5)
+        raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
             return "No results.", 400
