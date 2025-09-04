@@ -92,7 +92,7 @@ def local():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3":
+            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('local.html', data=data)
     except Exception as e:
@@ -113,7 +113,7 @@ def explore():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3":
+            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('explore.html', data=data)
     except Exception as e:
