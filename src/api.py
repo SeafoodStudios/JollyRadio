@@ -43,6 +43,9 @@ def station(subpath):
             return "Invalid station UUID.", 400
 
         station = parsed_data[0]
+        
+        if not station.get("url", "Unknown").startswith("https://"):
+            return "Unsupported station.", 400
 
         if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(station.get("name"))):
             return "Unsupported station.", 400
@@ -136,7 +139,7 @@ def search():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3":
+            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('name.html', data=data)
     except Exception as e:
