@@ -124,7 +124,7 @@ def search():
     subpath = request.args.get('q', '')
     if not bool(re.fullmatch(r'[A-Za-z0-9 ]+', subpath)):
         return "Input can only have alphanumerics with optional spaces.", 400
-    if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(subpath)):
+    if profanity.contains_profanity(subpath):
         return "Nothing profane, please!", 400
     try:
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5, headers=headers)
