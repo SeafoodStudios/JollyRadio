@@ -47,7 +47,7 @@ def station(subpath):
         if not station.get("url", "Unknown").startswith("https://"):
             return "Unsupported station.", 400
 
-        if profanity.contains_profanity(GoogleTranslator(source='auto', target='en').translate(station.get("name"))):
+        if profanity.contains_profanity(station.get("name"))):
             return "Unsupported station.", 400
             
         if not station.get("codec") == "MP3":
