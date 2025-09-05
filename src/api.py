@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
-from deep_translator import GoogleTranslator
 from better_profanity import profanity
 import requests
 import logging
