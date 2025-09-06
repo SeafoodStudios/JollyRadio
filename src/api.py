@@ -13,7 +13,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["30 per minute"]
+    default_limits=["35 per minute"]
 )
 
 logging.basicConfig(level=logging.INFO)
