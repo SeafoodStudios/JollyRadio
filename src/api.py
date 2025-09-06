@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
+from werkzeug.exceptions import HTTPException
 from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
 from better_profanity import profanity
@@ -12,7 +13,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["100 per minute"]
+    default_limits=["30 per minute"]
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -165,3 +166,6 @@ def terms():
     except Exception as e:
         logger.exception(e)
         return render_template('error.html', error="General error."), 500
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template('error.html', error="Please slow down, you are sending too many requests!"), 429
