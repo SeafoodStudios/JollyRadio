@@ -27,30 +27,30 @@ def station(subpath):
         try:
             uuid_obj = uuid.UUID(str(subpath))
         except ValueError:
-            return "Invalid station UUID.", 400
+            return render_template('error.html', error="Invalid station UUID"), 400
         
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byuuid/{subpath}", timeout=5, headers=headers)
 
         if not raw_data.status_code == 200:
-            return "Data could not be fetched.", 500
+            return render_template('error.html', error="Data could not be fetched."), 500
         
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
-            return "No results.", 400
+            return render_template('error.html', error="No results."), 400
 
         if not parsed_data:
-            return "Invalid station UUID.", 400
+            return render_template('error.html', error="No results."), 400
 
         station = parsed_data[0]
         
         if not station.get("url", "Unknown").startswith("https://"):
-            return "Unsupported station.", 400
+            return render_template('error.html', error="Unsupported station."), 400
 
         if profanity.contains_profanity(station.get("name")):
-            return "Unsupported station.", 400
+            return render_template('error.html', error="Unsupported station."), 400
             
         if not station.get("codec") == "MP3":
-            return "Unsupported music type.", 500
+            return render_template('error.html', error="Unsupported music type."), 400
 
         data = []
         index = 0
@@ -63,7 +63,7 @@ def station(subpath):
         return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"), data=data)
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 
 @app.route('/local/')
 def local():
@@ -76,13 +76,13 @@ def local():
             
         ip_raw = requests.get(f"http://ip-api.com/json/{ip}", timeout=5, headers=headers)
         if not ip_raw.status_code == 200:
-            return "Data could not be fetched.", 500
+            return render_template('error.html', error="Data could not be fetched."), 500
         ip_parsed = ip_raw.json()
         city = ip_parsed.get("city")
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/bystate/{city}", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
-            return "No results.", 400
+            return render_template('error.html', error="No results."), 400
 
         stations = parsed_data
         data = []
@@ -93,17 +93,17 @@ def local():
             index += 1
             if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
-        return render_template('local.html', data=data)
+        return render_template('local.html', data=data), 200
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 @app.route('/explore/')
 def explore():
     try:
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations?order=random&limit=100", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
-            return "No results.", 400
+            return render_template('error.html', error="No results."), 400
 
         stations = parsed_data
         data = []
@@ -114,22 +114,22 @@ def explore():
             index += 1
             if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
-        return render_template('explore.html', data=data)
+        return render_template('explore.html', data=data), 200
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 @app.route('/search/')
 def search():
     subpath = request.args.get('q', '')
     if not bool(re.fullmatch(r'[A-Za-z0-9 ]+', subpath)):
-        return "Input can only have alphanumerics with optional spaces.", 400
+        return render_template('error.html', error="Input can only have alphanumerics with optional spaces."), 400
     if profanity.contains_profanity(subpath):
-        return "Nothing profane, please!", 400
+        return render_template('error.html', error="Nothing profane, please."), 400
     try:
         raw_data = requests.get(f"https://de1.api.radio-browser.info/json/stations/byname/{subpath}", timeout=5, headers=headers)
         parsed_data = json.loads(raw_data.text)
         if parsed_data == []:
-            return "No results.", 400
+            return render_template('error.html', error="No results."), 400
 
         stations = parsed_data
         data = []
@@ -140,28 +140,28 @@ def search():
             index += 1
             if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
-        return render_template('name.html', data=data)
+        return render_template('name.html', data=data), 200
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 @app.route('/')
 def index():
     try:
         return render_template('index.html')
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 @app.route('/ping')
 def ping():
     try:
         return "pong", 200
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
 @app.route('/terms')
 def terms():
     try:
         return render_template('tos.html')
     except Exception as e:
         logger.exception(e)
-        return "Generic error.", 500
+        return render_template('error.html', error="General error."), 500
