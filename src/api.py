@@ -61,7 +61,7 @@ def station(subpath):
             index += 1
             data.append((item, station[item]))
                 
-        return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"), data=data)
+        return render_template('radio.html', link=station.get("url"), name=station.get("name"), country = station.get("country"),homepage = station.get("homepage"), codec = station.get("codec", "Unknown"), data=data)
     except Exception as e:
         logger.exception(e)
         return render_template('error.html', error="General error."), 500
