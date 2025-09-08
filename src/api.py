@@ -50,7 +50,7 @@ def station(subpath):
         if profanity.contains_profanity(station.get("name")):
             return render_template('error.html', error="Unsupported station."), 400
             
-        if not station.get("codec") == "MP3":
+        if not (station.get("codec", "Unknown") == "MP3" or station.get("codec", "Unknown") == "AAC" or station.get("codec", "Unknown") == "AAC+" or station.get("codec", "Unknown") == "OGG"):
             return render_template('error.html', error="Unsupported music type."), 400
 
         data = []
@@ -92,7 +92,7 @@ def local():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
+            if (station.get("codec", "Unknown") == "MP3" or station.get("codec", "Unknown") == "AAC" or station.get("codec", "Unknown") == "AAC+" or station.get("codec", "Unknown") == "OGG") and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('local.html', data=data), 200
     except Exception as e:
@@ -113,7 +113,7 @@ def explore():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
+            if (station.get("codec", "Unknown") == "MP3" or station.get("codec", "Unknown") == "AAC" or station.get("codec", "Unknown") == "AAC+" or station.get("codec", "Unknown") == "OGG") and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('explore.html', data=data), 200
     except Exception as e:
@@ -139,7 +139,7 @@ def search():
             if index > 99:
                 break
             index += 1
-            if station.get("codec", "Unknown") == "MP3" and station.get("url", "Unknown").startswith("https://"):
+            if (station.get("codec", "Unknown") == "MP3" or station.get("codec", "Unknown") == "AAC" or station.get("codec", "Unknown") == "AAC+" or station.get("codec", "Unknown") == "OGG") and station.get("url", "Unknown").startswith("https://"):
                 data.append((station.get("name", "Unknown"), station.get("homepage", "Unknown"), station.get("stationuuid", "")))
         return render_template('name.html', data=data), 200
     except Exception as e:
@@ -169,3 +169,6 @@ def terms():
 @app.errorhandler(429)
 def ratelimit_handler(e):
     return render_template('error.html', error="Please slow down, you are sending too many requests!"), 429
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('error.html', error="Page not found."), 404
