@@ -19,9 +19,15 @@
         <h2>This station is based in {{ country }}. You can find them at {{ homepage }}.</h2>
         <p>If the station does not load automatically, try to play the station manually by pressing the play button. If that does not work, the station may not be supported.</p>
         <audio controls autoplay>
+          {% if codec == "MP3" %}
           <source src="{{ link }}" type="audio/mpeg">
+          {% elif codec == "AAC" or codec == "AAC+" %}
           <source src="{{ link }}" type="audio/aac">
+          {% elif codec == "OGG" %}
           <source src="{{ link }}" type="audio/ogg">
+          {% else %}
+          <source src="{{ link }}" type="audio/mpeg">
+          {% endif %}
           Your browser does not support the audio element.
         </audio>
     <h2>Additional Information</h2>
